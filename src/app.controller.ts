@@ -10,8 +10,13 @@ import {
   NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import {
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+} from '@nestjs/swagger';
 import { AppService } from './app.service';
-import { EncurtadorDto } from './dto';
+import { EncurtadorDto, UrlResponse } from './dto';
 
 @Controller()
 export class AppController {
@@ -19,7 +24,13 @@ export class AppController {
   private readonly logger = new Logger(AppController.name);
 
   @Post('encurtador')
-  async createNewUrl(@Body() encurtadorDto: EncurtadorDto) {
+  @ApiOkResponse({ description: 'URL saved', type: UrlResponse })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+  })
+  async createNewUrl(
+    @Body() encurtadorDto: EncurtadorDto,
+  ): Promise<UrlResponse> {
     try {
       const newUrl = await this.appService.createNewUrl(encurtadorDto);
 
@@ -32,7 +43,12 @@ export class AppController {
 
   @Get('*')
   @Redirect('https://docs.nestjs.com')
-  async getHello(@Req() req: Request) {
+  @ApiOkResponse({ description: 'URL found and redirected to it' })
+  @ApiNotFoundResponse({ description: 'No URL found' })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+  })
+  async getUrl(@Req() req: Request) {
     try {
       const hash = req.url.replace(/[^0-9a-z]/gi, '');
       const url = await this.appService.getUrl(hash);
