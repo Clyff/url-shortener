@@ -23,7 +23,7 @@
     "migration:create": "npm run typeorm -- migration:create -n",
     "migration:up": "npm run typeorm -- migration:run",
     "migration:down": "npm run typeorm -- migration:revert",
-    "heroku-postbuild": "npm install && migration:up && npm run build"
+    "heroku-postbuild": "npm install && npm run migration:up && npm run build"
   },
   "dependencies": {
     "@nestjs/common": "^7.5.1",
