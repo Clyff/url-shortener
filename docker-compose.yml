@@ -1,0 +1,37 @@
+version: '3.7'
+services:
+  node:
+    container_name: node-url-shortener
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - ${DEFAULT_PORT}:${DEFAULT_PORT}
+      - 9229:9229
+    command: bash -c "npm install && npm run start"
+    env_file:
+      - .env
+    networks:
+      - localnet
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:13.1
+    container_name: postgres-url-shortener
+    networks:
+      - localnet
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_DATABASE}
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+networks:
+  localnet:
+volumes:
+  pgdata:
